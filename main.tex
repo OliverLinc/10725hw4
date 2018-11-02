@@ -194,6 +194,11 @@ In this problem we consider finding a sparse ``eigenvector'' of a matrix $A
 \]
 Is this problem convex? Why or why not?
 
+{
+\color{blue}
+This is not a convex problem. Because the equality constraint $\|x\|_2=1$ is not affine function.
+}
+
 \bigskip
 \noindent
 (b, 1pt) Consider the matrix-variate problem
@@ -207,11 +212,44 @@ Is this problem convex? Why or why not?
 \end{split}
 \]
 Is this problem convex? Why or why not?
- 
+
+{
+\color{blue}
+This problem is not convex. $rank(X)=1$ is not an affine constraint, and it can't be transformed into convex inequality constraint.
+}
+
 \bigskip
 \noindent
 (c, 4pts) Prove that the problems in parts (a) and (b) are equivalent.  Hint: if
 $X$ is rank 1, then we can write it as $X=xx^T$ for some vector $x$.
+
+{
+\color{blue}
+Because $\mathrm{rank}(X)=1$ and $X\succeq 0$, assume $X=xx^T$ for some vector $x$.
+\begin{itemize}
+    \item From a. to b.
+    \begin{align*}
+        \tr AX = \tr Axx^T = x^TA x
+    \end{align*}
+    \begin{align*}
+        \sum_{i,j} |X_{ij}| = \sum_{i,j} |x_i x_j| \le (\sum_i |x_i|)(\sum_j |x_j|) = \|x\|_1^2= C^2
+    \end{align*}
+    \begin{align*}
+        \tr X=\sum_i x_i^2 = \|x\|_2^2 = 1
+    \end{align*}
+    
+    \item From b. to a.
+    \begin{align*}
+        x^T A x = \tr AX
+    \end{align*}
+    \begin{align*}
+        \|x\|_2=\sqrt{\|x\|_2^2}=\sqrt{\tr X} = 1
+    \end{align*}
+    \begin{align*}
+        \|x\|_1
+    \end{align*}
+\end{itemize}
+}
 
 \bigskip
 \noindent
@@ -227,6 +265,19 @@ $X$ is rank 1, then we can write it as $X=xx^T$ for some vector $x$.
 Is this problem convex?  What is the relationship between this problem and that
 from part (b)?  
 
+{
+\color{blue}
+This problem is convex:
+\begin{itemize}
+    \item The objective function $\tr AX$ is a linear function;
+    \item The constraint $X\succeq 0$ is positive semi-definite matrix set, thus convex;
+    \item $\tr X=1$ is linear constraint;
+    \item $\sum_{i,j} |X_{ij}| \le C^2$ is convex function.
+\end{itemize}
+
+The feasible solution for part b must be also feasible for part d. The opposite is not true.
+}
+
 \bigskip
 \noindent
 (e, 4pts) Form the logarithmic barrier for the constraint $\sum_{i,j}|X_{ij}| \le C^2$
@@ -234,12 +285,84 @@ and use this along with the logarithmic barrier for $X \succeq 0$ ($\phi(X) =
 \log \det X$) to modify the problem in part (d) to have a smooth objective and
 equality constraint.
 
+{
+\color{blue}
+For the constraint $\sum_{i,j}|X_{ij}| \le C^2$, we introduce another set of variables $T_{ij}$ to make it smooth.
+\begin{align*}
+    &h_1(X,T)=\sum_{ij}T_{ij} - C^2 \leq 0 \\
+    &h_2(X,T)=X_{ij}-T_{ij} \leq 0 \\
+    &h_3(X,T)=-X_{ij}-T_{ij} \leq 0
+\end{align*}
+
+Thus the minimization can be written as:
+\[
+\begin{split}
+\min_{X \in \mathbb{S}^n, T} \;\; & -t\cdot \tr AX -\log (C^2-\sum_{ij}T_{ij}) -\sum_{i,j}(\log (T_{ij}-X_{ij})+\log (X_{ij}+T_{ij}))- \log \det X\\
+\st \;\; & \tr X = 1
+\end{split}
+\]
+}
+
 \bigskip
 \noindent
 (f, 5pts) Setup and describe the iterations of the barrier method for the problem in
 part (d), explicitly deriving the Newton update for $X^{(k)}$.
+
+{
+\color{blue}
+Let $A^a=\mathrm{adj}(A)$, the adjugate matrix of $A$.
+\begin{align*}
+    &\nabla_{X_{ij}} f = -tA_{ji} - (-\frac{1}{T_{ij}-X_{ij}}+\frac{1}{X_{ij}+T_{ij}})-\frac{A^a_{ji}}{\det A} \\
+    &\nabla_{T_{ij}} f = \frac{1}{C^2-\sum_{i,j}T_{ij}} - (\frac{1}{T_{ij}-X_{ij}}+\frac{1}{X_{ij}+T_{ij}})
+\end{align*}
+
+\begin{align*}
+    &\nabla^2_{X_{ij}X_{pq}}f=
+    \begin{cases}
+    \frac{1}{(T_{ij}-X_{ij})^2}+\frac{1}{(X_{ij}+T_{ij})^2} ~ & ij=pq \\
+    0 & \text{otherwise}
+    \end{cases} \\
+    &\nabla^2_{T_{ij}T_{pq}}f=
+    \begin{cases}
+    \frac{1}{(C^2-\sum_{i,j}T_{ij})^2}+\frac{1}{(T_{ij}-X_{ij})^2} + \frac{1}{(X_{ij}+T_{ij})^2} & ij=pq \\
+    0 & \text{otherwise}
+    \end{cases} \\
+    &\nabla^2_{X_{ij}T_{pq}}f=
+    \begin{cases}
+    -(\frac{1}{(T_{ij}-X_{ij})^2}-\frac{1}{(X_{ij}+T_{ij})^2}) ~ & ij=pq \\
+    0 & \text{otherwise}
+    \end{cases} \\
+    &\nabla^2_{T_{ij}X_{pq}}f=
+    \begin{cases}
+    -\frac{1}{(T_{ij}-X_{ij})^2} + \frac{1}{(X_{ij}+T_{ij})^2} & ij=pq \\
+    0 & \text{otherwise}
+    \end{cases}
+\end{align*}
+
+Solve the KKT condition with the gradient from $f(x^{(k-1)}$:
+\begin{align*}
+    \begin{bmatrix}
+    \nabla^2 f & A \\
+    A & 0
+    \end{bmatrix}
+    \begin{bmatrix}
+    v\\
+    w
+    \end{bmatrix}
+    =\begin{bmatrix}
+    -\nabla f \\
+     0
+    \end{bmatrix}
+\end{align*}
+Think of the linear constraint $\tr X=1$ as $AX^-=1$, where $X^-$ is a flattened vector.
+The next $X$ is:
+\begin{align*}
+    X^{(k)}=x + tv
+\end{align*}
+}
 \bigskip
 \noindent
+
 \section{Second Order Methods for Logistic Regression (22 pts) [Akash]}
 
 In this problem, we will try to classify a viewer's age group from his movie ratings. We formulate the problem as a binary classification with output label  $y \in \{0,1\}^n$, corresponding to whether a person`s age is under $40$, and input features $X \in \mathbb{R}^{n \times (p+1)}$. Similarly to previous homework problems, the first column of $X$ is taken to be $1_n$ to account for the intercept term. We will apply second order methods to solve the logistic regression problem.
@@ -257,15 +380,100 @@ We model each $y_i|x_i$ with the probabilistic model
     l(\beta) = -\sum_{i=1}^{n} \log(p_{\beta}(y_i | x_i)) = -\sum_{i=1}^{n}y_i(X\beta)_i + \sum_{i=1}^{n}\log(1 +
     \exp\{(X\beta)_i\}),
   \]
-
     Hint: model $y_i|x_i$ as a bernoulli random variable with parameter $\mu_i = p_{\beta}(y_i = 1|x_i)$.
+  {
+  \color{blue}
+  \begin{align*}
+      l(\beta)&=-\sum_{i=1}^n\log (p_\beta (y_i|x_i)) \\
+      &= -(\sum_{i=1}^n y_i\log (u_i) + (1-y_i)\log (1-u_i)) \\
+      &= - \sum_{i=1}^n y_i(\log(u_i)-\log(1-u_i)) - \sum_{i=1}^n\log (1-u_i) \\
+      &= - \sum_{i=1}^{n}y_i(X\beta)_i + \sum_{i=1}^n\log \frac{1}{1-u_i} \\
+      &= -\sum_{i=1}^{n}y_i(X\beta)_i + \sum_{i=1}^{n}\log(1 + \exp\{(X\beta)_i\})
+  \end{align*}
+  }
     \item In this part of the problem, we will implement Newton's method for the nonpenalized logistic regression problem and see that in this context, Newton's method is known as Iteratively Reweighted Least Squares (IRLS).
         \begin{enumerate}
     	\item[(i, 1pt)] Express the gradient and the Hessian of the NLL in terms of $X,y,$ and $\mu$.
+    	{
+    	\color{blue}
+    	\begin{align*}
+    	    g &= - X^Ty + \sum_{i=1}^n \frac{\exp (X\beta)_i}{1+\exp (X\beta)_i}X_i^T \\
+    	    &=-X^Ty + \sum_{i=1}^n \mu_i X_i^T \\
+    	    &= -X^T y + X^T \mu \\
+    	    &= X^T(\mu-y)
+    	\end{align*}
+    	\begin{align*}
+    	    H(\beta) &= \sum_{i=1}^n\frac{\exp(X\beta)_iX_i^T X_i}{(1+\exp(X\beta)_i)^2} \\
+    	    &=\sum_{i=1}^n \mu_i(1-\mu_i) X_i^T X_i \\
+    	    &= X^T\diag(\mu_i(1-\mu_i)) X
+    	\end{align*}
+    	}
     	\item[(ii, 1pt)] Write the Newton update for $\beta$ using the above gradient and Hessian, using $t$ to denote step-size.
+    	{
+    	\color{blue}
+    	\begin{align*}
+    	    \beta^+=\beta - t H^{-1}g
+    	\end{align*}
+    	}
+    	
     	\item[(iii, 1pts)] Show that the Newton update has the form of a weighted least-squares estimation problem. This is why in this context, Newton's method is known as IRLS.
+    	
+    	{
+    	\color{blue}
+    	For convinience let $D = \diag(\mu_i(1-\mu_i))$
+    	Let:
+    	\[
+    	f(\beta)=(z-X\beta)^T tD(z-X\beta)
+    	\]
+    	where $z= X\beta^{k-1}-tD^{-1}(\mu-y)$
+    	\begin{align*}
+    	    \nabla f = -tX^TD(z-X\beta)=0
+    	\end{align*}
+    	then
+    	\begin{align*}
+    	    \beta^\star &= (X^TDX)^{-1}X^T D z \\
+    	    &=(X^TDX)^{-1}X^T D X\beta - t(X^TDX)^{-1}X^T D D^{-1}(\mu-y) \\
+    	    &=\beta - t H^{-1}X^T(\mu-y) \\
+    	    &=\beta - t H^{-1}g
+    	\end{align*}
+    	As we see here, the optimal solution of IRLS objective $f(\beta)$ has the same form as the Newton update.
+    	}
     	\item[(iv, 1pts)] Given $X$ and $y$, write out the steps for performing IRLS to estimate $\hat{\beta}$. Assume a fixed step size $t$ in the steps.
+    	{
+    	\color{blue}
+    	\begin{enumerate}
+    	    \item[1.] Initialize $\beta$;
+    	    \item[2.] If the convergence requirement is satisfied, return $\beta$;
+    	    \item[3.] Compute gradient and Hessian:
+    	    \begin{align*}
+    	        &\mu=\frac{1}{1+\exp(-X\beta)} \\
+    	        &D=\diag(\mu_i(1-\mu_i)) \\
+    	        &g = X^T(\mu-y) \\
+    	        &H = X^T DX
+    	    \end{align*}
+    	    \item[4.] Compute next $\beta^+$:
+    	    \begin{align*}
+    	        \beta^+=\beta - t H^{-1}g
+    	    \end{align*}
+    	    \item[5.] Go to step 2.
+    	\end{enumerate}
+    	}
         \item[(v, 3pts)] Now, implement IRLS with backtracking using the movie data set on the website (in \texttt{hwk4\_gs3.zip}, for this homework, not the second one). Initialize your weights with zeros. Use $\alpha = 0.01$ and shrink parameter $\beta = 0.9$ for backtracking. You can stop IRLS when the change between consecutive objective values is less than 1e-6. Report both the train and test errors of classifying whether a person is under $40$. Plot $f^{(k)} - f^{\star}$ versus $k$,  where $f^{(k)}$ denotes the objective value at outer iterations $k$ of IRLS, and the optimal objective value is $f^\star = 186.637$ on a semi-log scale (i.e. where the y-axis is in log scale).
+        {
+        \color{blue}
+        
+        See Fig \ref{fig:irls}.
+        \begin{figure}
+            \centering
+            \includegraphics[scale=.3]{irls.png}
+            \caption{IRLS}
+            \label{fig:irls}
+        \end{figure}
+        
+        Train error: 0.1583;
+        
+        Test error: 0.2952.
+        }
         \end{enumerate}
 
     \item Now, we introduce regularization to the NLL to improve our test error. The problem becomes:
@@ -275,10 +483,81 @@ We model each $y_i|x_i$ with the probabilistic model
 	\end{equation}
 	    \begin{enumerate}
 	    \item[(i, 2pts)] Rewrite \eqref{eq:penalty} as a problem that has a smooth criterion, aims to preserve the sparsity of the original problem, and can be solved by an interior point method. (Hint: consider introducing a new variable and corresponding inequality constraints).
+	    {
+	    \color{blue}
+	    
+	    As usual, the absolute value term can be changed into smooth function with new variables $\xi\in \mathbb{R}^p$.
+	    \begin{align*}
+	        \min_{\beta \in \mathbb{R}^{p+1},\xi \in \mathbb{R}^p} \quad &l(\beta) + \lambda\sum_{i=1}^p \xi_i \\
+	        s.t. &\xi_i\geq \beta_i \\
+	             &\xi_i\geq -\beta_i
+	    \end{align*}
+	    }
 	    \item[(ii, 3pts)] Describe the iterations of the barrier method for the problem in (i), explicitly deriving the Newton updates.
+	    {
+	    \color{blue}
+	    
+	    Let the logrithmetic barrier objective function
+	    \[F=t(l(\beta) + \lambda\sum_{i=1}^p \xi_i)-\sum_{i=1}^p(\log(\xi_i-\beta_i))+\log(\xi_i+\beta_i))\]
+	    We have:
+	    \begin{align*}
+	        g_F =
+	        t\begin{pmatrix}
+	        g \\
+	        \lambda \mathbf{1}
+	        \end{pmatrix}
+	        +
+	        \begin{pmatrix}
+	        0 \\
+	        \dfrac{1}{\xi_i-\beta_i} - \dfrac{1}{\xi_i+\beta_i}\\
+	         - \dfrac{1}{\xi_i-\beta_i} - \dfrac{1}{\xi_i+\beta_i}\\
+	        \end{pmatrix}
+	    \end{align*}
+	    \begin{align*}
+	        H_F =
+	        t\begin{bmatrix}
+	        H &  \\
+	         & \mathbf{0}_{p\times p} \\
+	        \end{bmatrix}+
+	        \begin{bmatrix}
+	        0 & &\\
+	         & \diag(\dfrac{1}{(\xi_i-\beta_i)^2}+\dfrac{1}{(\xi_i+\beta_i)^2}) & \\
+	         & & \diag(\dfrac{1}{(\xi_i-\beta_i)^2}+\dfrac{1}{(\xi_i+\beta_i)^2}) \\
+	        \end{bmatrix}
+	    \end{align*}
+	    Newton update:
+	    \begin{align*}
+	        \begin{pmatrix}
+	        \beta \\
+	        \xi \\
+	        \end{pmatrix}^+ = 
+	        \begin{pmatrix}
+	        \beta \\
+	        \xi \\
+	        \end{pmatrix} - t (H_F)^{-1}g_F
+	    \end{align*}
+	    }
 	    \item[(iii, 4pts)] Implement the barrier method described above. For the barrier parameters $t$(the multiplier for the original criterion in \eqref{eq:penalty}) and $\mu$(the constant by which $t$ increases at each outer iteration of the barrier method), use $\mu=20$ and start with $t=5$. A good number for $m$(the constant that, together with $t$, bounds the duality gap) is the number of constraints in the barrier problem. For backtracking during the Newton method steps, use $\alpha=0.2$ and $\beta=0.9$. You can use 1e-9 as the stopping threshold for both the Newton method and the barrier method. Remember to initialize the centering Newton method step with a strictly feasible point (hint: in MATLAB, one simple way to find such a point is with $linprog$).
     
 	    Use the barrier method with $\lambda=15$ to classify whether a viewer is under $40$. Report the train and test classification errors. Report the number of zeros at the solution $\beta^{\star}$. Here we consider any number with absolute value under 1e-10 to be zero.
+	    
+	    {
+	    \color{blue}
+	    The objective value at the end of the episodes is 306.4772, total Newton update is 116648. I tried using tolerance for barrier method as $1e-9$, but it was too small and the program got stuck in around $1.8e-9$ and couldn't go further over 100000 Newton updates with $t=40000$. So I changed the tolerance to $1e-8$ for barrier method. See Fig ~\ref{fig:nll_barrier}.
+	    
+	    Train error: 0.213425
+	    
+	    Test error: 0.250794
+	    
+	    Number of zeros of $\beta^\star$ (absolute value under $1e-10$):  10.
+	    
+	    \begin{figure}
+            \centering
+            \includegraphics[scale=.3]{nll_newton.png}
+            \caption{NLL Barrier method}
+            \label{fig:nll_barrier}
+        \end{figure}
+	    }
 	    
 	    \item[(iv, 4 pts)] Now, implement proximal gradient descent with backtracking for logistic regression with lasso penalty. You can refer back to the group lasso problem in homework 2 to help you in your implementation.
 
@@ -358,6 +637,39 @@ where we fix $\gamma = 500$.
     Confirm that the Hessian only changes from that of the original version in
     the diagonal entries. (Hint: This may be helpful in understanding the update
     directions in the interior point implementation in part (b).)
+    
+    {
+    \color{blue}
+    The dual is:
+    \begin{equation*}
+    \begin{aligned} 
+      & \underset{w}{\text{minimize}} && \frac{1}{2}w^T \tilde{K} w -1^Tw \\
+      & \text{subject to} && 0\leq w\leq C\mathbf{1}, \quad w^Ty = 0\\
+    \end{aligned}
+    \end{equation*}
+    The gradient and Hessian:
+    \begin{align*}
+        \nabla f(w) = \tilde{K} w-\mathbf{1}
+    \end{align*}
+    \begin{align*}
+        \nabla^2 f(w) = \tilde{K}
+    \end{align*}
+    The log barrier term $g(w)$:
+    \begin{align*}
+        g(w) = -\sum_{i=1}^n \log (C-w_i)-\sum_{i=1}^n\log w_i
+    \end{align*}
+    Gradient and Hessian of the log barrier objective $F(w)=tf(w)+g(w)$:
+    \begin{align*}
+        \nabla_i F= t(\tilde{K_{i\cdot}}w-1)+\frac{1}{C-w_i}-\frac{1}{w_i}
+    \end{align*}
+    \begin{align*}
+        &\nabla_{ii} F=t\tilde{K}_{ii}+\frac{1}{(C-w_i)^2}+\frac{1}{w_i^2} \\
+        &\nabla_{ij} F=t\tilde{K}_{ij} ~ i\neq j
+    \end{align*}
+    
+    As we can see, the Hessian of the log barrier objective $F$ only changes the $\nabla_{ii}F$, the diagonal entries (ignoring the constant $t$).
+    }
+    
   \item[(ii, Bonus question, 5pts)] Implement the barrier method as described in
     class to solve the SVM dual. Note, you will be using an equality-constrained
     Newton method with backtracking, in the barrier method updates. Set $C=0.1$. Using
@@ -393,27 +705,187 @@ where we fix $\gamma = 500$.
 \item \textbf{Primal-Dual Interior Point Method}
   \begin{enumerate}[(i)]
       \item[(i, 2pts)] For a given $t > 0$, list the perturbed KKT condition for this problem.
+      
+      {
+      \color{blue}
+      
+      With the notation from ii., the Lagragian for the original problem (without log barrier) is:
+      \begin{align*}
+          L = \frac{1}{2}w^T \tilde{K} w - w^T \mathbf{1} + \lambda y^T w + (-w^T)u + ((w-C\mathbf{1})^T)v
+      \end{align*}
+      Perturbed KKT conditions:
+      \begin{align*}
+          \begin{cases}
+          \frac{\partial L}{\partial w}=\tilde{K}w-\mathbf{1}+\lambda y-\mu +v = 0 \\
+          y^T w = 0 \\
+          -\diag (w)u + \frac{1}{t}\mathbf{1} = 0 \\
+          -\diag (C\mathbf{1}-w)v + \frac{1}{t}\mathbf{1} = 0 \\
+          w-C\mathbf{1}\leq 0 \\
+          -w \leq 0 \\
+          \lambda \geq 0 \\
+          u\geq 0 \\
+          v\geq 0
+          \end{cases}
+      \end{align*}
+      }
 
-\item[(ii, 2pts)] Let $u_i \geq 0$ be the dual variable correspond to the
-  inequality constraint $-w_i \leq 0, \forall i$ and $v_i\geq 0$ be the dual variable correspond to the inequality constraint $w_i\leq C, \forall i$. Let $\lambda$ be the dual variable correspond to the equality constraint $y^Tw = 0$. Write down the expression for the primal residual $r_{\text{prim}}$, the dual residual $r_{\text{dual}}$ and the centrality residual $r_{\text{cent}}$. 
+        \item[(ii, 2pts)] Let $u_i \geq 0$ be the dual variable correspond to the inequality constraint $-w_i \leq 0, \forall i$ and $v_i\geq 0$ be the dual variable correspond to the inequality constraint $w_i\leq C, \forall i$. Let $\lambda$ be the dual variable correspond to the equality constraint $y^Tw = 0$. Write down the expression for the primal residual $r_{\text{prim}}$, the dual residual $r_{\text{dual}}$ and the centrality residual $r_{\text{cent}}$.
+        
+        {
+        \color{blue}
+        \begin{align*}
+            &D_u h(w) = 
+            \begin{bmatrix}
+            \nabla h_1(w)^T \\
+            \cdots \\
+            \nabla h_m(w)^T
+            \end{bmatrix} = 
+            -I \\
+            &D_v h(w) = I
+        \end{align*}
+        \begin{align*}
+            &r_{dual} = \nabla f(w) + Dh_u(w)^T u + Dh_v(w)^T v + y\lambda = \nabla f(w) - u + v + \lambda y \\
+            &r_{cent} = -\diag(u)h_u(w)-\diag(v)h_v(w)-\frac{1}{t}\mathbf{1}=\diag(u)w-\diag(v)(w-C\mathbf{1})-\frac{1}{t}\mathbf{1} \\
+            &r_{prim} = y^T w
+        \end{align*}
+        }
 
-\item[(iii, 2pts)] Define the residual vector $r(w, u, v, \lambda) = (r_{\text{dual}}, r_{\text{cent}}, r_{\text{prim}})$ and $z = (w, u, v, \lambda)$. The primal-dual interior point method is trying to find an update direction $\Delta z = (\Delta w, \Delta u, \Delta v, \Delta\lambda)$ such that $r(z + \Delta z) = 0$. However, in general $r(z + \Delta z) = 0$ corresponds to a system of nonlinear equations that does not admit closed-form solution, so instead we make a first-order approximation to $r(z + \Delta z)$ and solves the corresponding linear system: $r(z + \Delta z)\approx r(z) + Dr(z)\Delta z = 0$. Write down the linear system to be solved in order to get $\Delta z$. $\Delta z$ is also known as the Newton direction.
+        \item[(iii, 2pts)] Define the residual vector $r(w, u, v, \lambda) = (r_{\text{dual}}, r_{\text{cent}}, r_{\text{prim}})$ and $z = (w, u, v, \lambda)$. The primal-dual interior point method is trying to find an update direction $\Delta z = (\Delta w, \Delta u, \Delta v, \Delta\lambda)$ such that $r(z + \Delta z) = 0$. However, in general $r(z + \Delta z) = 0$ corresponds to a system of nonlinear equations that does not admit closed-form solution, so instead we make a first-order approximation to $r(z + \Delta z)$ and solves the corresponding linear system: $r(z + \Delta z)\approx r(z) + Dr(z)\Delta z = 0$. Write down the linear system to be solved in order to get $\Delta z$. $\Delta z$ is also known as the Newton direction.
+        
+        {
+        \color{blue}
+        
+        First let's compute something.
+        \begin{align*}
+            \nabla^2 f(w) + \sum_{i=1}^n u_i\nabla^2 hu_i(w) + \sum_{i=1}^n v_i \nabla^2 hv_i(w) = \nabla^2 f(w)
+        \end{align*}
+        \begin{align*}
+            \begin{bmatrix}
+            \nabla^2 f(w) & D_u h(w)^T & D_v h(w)^T & y \\
+            -\diag(u) D_uh(w) & -\diag(h_u(w)) & 0 & 0 \\
+            -\diag(v) D_vh(w) & 0 & -\diag(h_v(w)) & 0 \\
+            y^T & 0 & 0 & 0
+            \end{bmatrix}
+            \begin{pmatrix}
+            \Delta w \\
+            \Delta u \\
+            \Delta v \\
+            \Delta \lambda
+            \end{pmatrix}
+            =-\begin{pmatrix}
+            \nabla f(w) - u + v + \lambda y \\
+            -\diag(u)  h_u(w) - \frac{1}{t}\mathbf{1} \\
+            -\diag(v) h_v(w) - \frac{1}{t}\mathbf{1} \\
+            y^T w
+            \end{pmatrix}
+        \end{align*}
+        which is
+        \begin{align*}
+            \begin{bmatrix}
+            \tilde{K} & -I & I & y \\
+            \diag(u) & \diag(w) & 0 & 0 \\
+            -\diag(v) & 0 & -\diag(w-C\mathbf{1}) & 0 \\
+            y^T & 0 & 0 & 0
+            \end{bmatrix}
+            \begin{pmatrix}
+            \Delta w \\
+            \Delta u \\
+            \Delta v \\
+            \Delta \lambda
+            \end{pmatrix}
+            =-\begin{pmatrix}
+            \tilde{K}w - \mathbf{1} - u + v + \lambda y \\
+            \diag(u)w - \frac{1}{t}\mathbf{1} \\
+            -\diag(v) (w-C\mathbf{1}) - \frac{1}{t}\mathbf{1} \\
+            y^T w
+            \end{pmatrix}
+        \end{align*}
+        }
 
-\item[(iv, 2pts)]   Primal-dual interior point method requires a strictly feasible point of (\ref{eq:dual}) as a start point. Form a linear program that can be used to find such a strictly feasible initial point. 
-\item[(v, 9pts)]   Implement the primal-dual interior point method to solve the minimization problem you formed in (i). We fix $C = 0.1$, $\mu = 1000$. You should stop your algorithm when both the following two conditions are met:
-    \begin{itemize}
-      \item   $(||r_{\text{prim}}||_2^2 + ||r_{\text{dual}}||_2^2)^{1/2}\leq 10^{-6}$.
-      \item   The surrogate duality gap is less than or equal to $2\times 10^{-6}$.
-    \end{itemize}
-  Here is a list of tips that might be helpful to you:
-  \begin{itemize}
-      \item   Use the LP formed in the last question to find a strictly feasible initial point.
-      \item   After obtaining each Newton direction, it is important to compute a corresponding step size such that both the primal and the dual variables are feasible. 
-      \item   For backtracking line search, you can use $\alpha = 0.01$ and $\beta = 0.5$ (Note this $\beta$ corresponds to the parameter to shrink the step size, not the $\beta$ in the primal SVM).
-      \item   It is important to tune to barrier parameter $\mu$ such that your algorithm stops within a fair amount of iterations. As a reference, the TA's implementation stops in $99$ iterations.
-  \end{itemize}
-  Plot the objective value versus iterations.
-  Report the function value at the optimal $w^*$: $f^* = \frac{1}{2}(w^*)^T\tilde{K}w^* - 1^Tw^*$. Report the number of support vectors. Here we consider any $w^*$ that is less than $10^{-5}$ to be $0$. Use the optimal $w^*$ to do prediction and report classification accuracy. 
+    \item[(iv, 2pts)]   Primal-dual interior point method requires a strictly feasible point of (\ref{eq:dual}) as a start point. Form a linear program that can be used to find such a strictly feasible initial point.
+
+    {
+    \color{blue}
+    The linear program to find strictly feasible point is:
+    \begin{align*}
+        y^T w = 0, 0< w < C\mathbf{1}
+    \end{align*}
+    Suppose $y$ vector has $n_p$ number of 1 and $n_n$ number of -1. Let $0 < q_n = C/2\min\{n_p/n_n,1\} < C$, $0< q_p = q_nn_n/n_p < C$. We then let $w_i=q_p$ where $y_i=1$ and $w_i=q_n$ where $y_i=-1$. Thus $y^Tw=q_pn_p - q_nn_n=0$ and $0<w_i<C$.
+    }
+    \item[(v, 9pts)]   Implement the primal-dual interior point method to solve the minimization problem you formed in (i). We fix $C = 0.1$, $\mu = 1000$. You should stop your algorithm when both the following two conditions are met:
+        \begin{itemize}
+          \item   $(||r_{\text{prim}}||_2^2 + ||r_{\text{dual}}||_2^2)^{1/2}\leq 10^{-6}$.
+          \item   The surrogate duality gap is less than or equal to $2\times 10^{-6}$.
+        \end{itemize}
+      Here is a list of tips that might be helpful to you:
+      \begin{itemize}
+          \item   Use the LP formed in the last question to find a strictly feasible initial point.
+          \item   After obtaining each Newton direction, it is important to compute a corresponding step size such that both the primal and the dual variables are feasible. 
+          \item   For backtracking line search, you can use $\alpha = 0.01$ and $\beta = 0.5$ (Note this $\beta$ corresponds to the parameter to shrink the step size, not the $\beta$ in the primal SVM).
+          \item   It is important to tune to barrier parameter $\mu$ such that your algorithm stops within a fair amount of iterations. As a reference, the TA's implementation stops in $99$ iterations.
+      \end{itemize}
+      Plot the objective value versus iterations.
+      Report the function value at the optimal $w^*$: $f^* = \frac{1}{2}(w^*)^T\tilde{K}w^* - 1^Tw^*$. Report the number of support vectors. Here we consider any $w^*$ that is less than $10^{-5}$ to be $0$. Use the optimal $w^*$ to do prediction and report classification accuracy. 
+      
+      {
+      \color{blue}
+      It may not be wise to throw the above equations directly into MATLAB and solve the update step. Let's first simplify it.
+      
+      First we can solve the $\Delta u$.
+      \begin{align*}
+          &\diag (u) \Delta w + \diag (w) \Delta u = -\diag(w)u+\frac{1}{t}\mathbf{1} \\
+          \Rightarrow &\Delta u = -u+\frac{1}{t}\diag(\frac{1}{w_i})\mathbf{1} -\diag(\frac{u_i}{w_i})\Delta w
+      \end{align*}
+      
+      Then solve $\Delta v$:
+      \begin{align*}
+      &-\diag(v)\Delta w + \diag(C\mathbf{1}-w)\Delta v = -\diag(C\mathbf{1}-w)v + \frac{1}{t}\mathbf{1} \\
+      \Rightarrow & \Delta v = -v+\frac{1}{t}\diag(\frac{1}{C-w_i})\mathbf{1}+\diag (\frac{v_i}{C-w_i})\Delta w
+      \end{align*}
+      
+      Then solve $\Delta \lambda$.
+      
+      We now have:
+      \begin{align*}
+          &\tilde{K} \Delta w - \Delta u + \Delta v + y\Delta \lambda = -(\tilde{K}w - \mathbf{1} - u + v + \lambda y) \\
+          &y^T\Delta w=y^T w \\
+          &\Delta u = -u+\frac{1}{t}\diag(\frac{1}{w_i})\mathbf{1} -\diag(\frac{u_i}{w_i})\Delta w \\
+          &\Delta v = -v+\frac{1}{t}\diag(\frac{1}{C-w_i})\mathbf{1}+\diag (\frac{v_i}{C-w_i})\Delta w
+      \end{align*}
+      Let:
+      \begin{align*}
+          &G=\diag(\frac{u_i}{w_i}+\frac{v_i}{C-w_i}) \\
+          &Q = \tilde{K}+G \\
+          &z = -\tilde{K}w + \mathbf{1}-\lambda y + \frac{1}{t}\diag(\frac{1}{w_i}-\frac{1}{C-w_i})\mathbf{1}
+      \end{align*}
+      then we have:
+      \begin{align*}
+          \Delta \lambda = \frac{y^TQ^{-1}z + y^T w}{y^T Q^{-1} y}
+      \end{align*}
+      Finally solve $\Delta w$.
+      We now have:
+      \begin{align*}
+          &\tilde{K} \Delta w - \Delta u + \Delta v + y\Delta \lambda = -(\tilde{K}w - \mathbf{1} - u + v + \lambda y)
+      \end{align*}
+      Then we have:
+      \begin{align*}
+          \Delta w = Q^{-1}(z-y\Delta \lambda)
+      \end{align*}
+      
+      The objective value versus iterations:
+      \begin{figure}
+          \centering
+          \includegraphics[scale=.4]{obj_barrier.png}
+          \caption{Objective function versus iterations}
+          \label{fig:my_label}
+      \end{figure}
+      
+      The function value at optimal $w^\star$ is -42.417465.
+      
+      The number of S.V.: 745.
+      
+      Classification error: 0.0012; false positive: 0.0026, false negative: 0.
+      }
   \end{enumerate}
 
 \end{enumerate}
