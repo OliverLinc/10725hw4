@@ -226,8 +226,6 @@ $X$ is rank 1, then we can write it as $X=xx^T$ for some vector $x$.
 {
 \color{blue}
 Because $\mathrm{rank}(X)=1$ and $X\succeq 0$, assume $X=xx^T$ for some vector $x$.
-\begin{itemize}
-    \item From a. to b.
     \begin{align*}
         \tr AX = \tr Axx^T = x^TA x
     \end{align*}
@@ -237,18 +235,7 @@ Because $\mathrm{rank}(X)=1$ and $X\succeq 0$, assume $X=xx^T$ for some vector $
     \begin{align*}
         \tr X=\sum_i x_i^2 = \|x\|_2^2 = 1
     \end{align*}
-    
-    \item From b. to a.
-    \begin{align*}
-        x^T A x = \tr AX
-    \end{align*}
-    \begin{align*}
-        \|x\|_2=\sqrt{\|x\|_2^2}=\sqrt{\tr X} = 1
-    \end{align*}
-    \begin{align*}
-        \|x\|_1
-    \end{align*}
-\end{itemize}
+
 }
 
 \bigskip
@@ -566,6 +553,26 @@ We model each $y_i|x_i$ with the probabilistic model
 	    To compare the convergence of both the barrier method and the proximal gradient descent, plot $f^{(k)} - f^{\star}$ versus $k$,  where $f^{(k)}$ denotes the objective value at total number of iterations $k$ of the algorithms, and the optimal objective value is $f^\star = 306.476$ on a semi-log scale (i.e. where the y-axis is in log scale). Plot these in the same figure. 
 
       To be clear, when counting total number of iterations, each backtracking iteration counts as 1 iteration (for prox gradient descent), and each inner Newton iteration counts as 1 iteration (for log-barrier method).
+      {
+      \color{blue}
+      
+      The result for proximal, see Fig \ref{fig:nll_proximal}.
+      
+      Both barrier and proximal, see Fig \ref{fig:barrier-prox}.
+        \begin{figure}
+            \centering
+            \includegraphics[scale=.3]{prox.png}
+            \caption{NLL Proximal method}
+            \label{fig:nll_proximal}
+        \end{figure}
+        
+        \begin{figure}
+            \centering
+            \includegraphics[scale=.15]{barrier-prox.png}
+            \caption{NLL Barrier method vs Proximal method}
+            \label{fig:barrier-prox}
+        \end{figure}
+      }
 	    \end{enumerate}
 \end{enumerate}
 
