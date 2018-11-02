@@ -499,18 +499,23 @@ We model each $y_i|x_i$ with the probabilistic model
 	    
 	    Let the logrithmetic barrier objective function
 	    \[F=t(l(\beta) + \lambda\sum_{i=1}^p \xi_i)-\sum_{i=1}^p(\log(\xi_i-\beta_i))+\log(\xi_i+\beta_i))\]
-	    $F = t(l(\beta) + \lambda\sum_{i=1}^p \xi_i)-$. We have:
+	    We have:
 	    \begin{align*}
 	        g_F =
+	        t\begin{pmatrix}
+	        g \\
+	        \lambda \mathbf{1}
+	        \end{pmatrix}
+	        +
 	        \begin{pmatrix}
-	        g_0 \\
-	        g_i + \dfrac{1}{\xi_i-\beta_i} - \dfrac{1}{\xi_i+\beta_i}\\
-	        \lambda \mathbf{1} - \dfrac{1}{\xi_i-\beta_i} - \dfrac{1}{\xi_i+\beta_i}\\
+	        0 \\
+	        \dfrac{1}{\xi_i-\beta_i} - \dfrac{1}{\xi_i+\beta_i}\\
+	         - \dfrac{1}{\xi_i-\beta_i} - \dfrac{1}{\xi_i+\beta_i}\\
 	        \end{pmatrix}
 	    \end{align*}
 	    \begin{align*}
 	        H_F =
-	        \begin{bmatrix}
+	        t\begin{bmatrix}
 	        H &  \\
 	         & \mathbf{0}_{p\times p} \\
 	        \end{bmatrix}+
@@ -535,6 +540,24 @@ We model each $y_i|x_i$ with the probabilistic model
 	    \item[(iii, 4pts)] Implement the barrier method described above. For the barrier parameters $t$(the multiplier for the original criterion in \eqref{eq:penalty}) and $\mu$(the constant by which $t$ increases at each outer iteration of the barrier method), use $\mu=20$ and start with $t=5$. A good number for $m$(the constant that, together with $t$, bounds the duality gap) is the number of constraints in the barrier problem. For backtracking during the Newton method steps, use $\alpha=0.2$ and $\beta=0.9$. You can use 1e-9 as the stopping threshold for both the Newton method and the barrier method. Remember to initialize the centering Newton method step with a strictly feasible point (hint: in MATLAB, one simple way to find such a point is with $linprog$).
     
 	    Use the barrier method with $\lambda=15$ to classify whether a viewer is under $40$. Report the train and test classification errors. Report the number of zeros at the solution $\beta^{\star}$. Here we consider any number with absolute value under 1e-10 to be zero.
+	    
+	    {
+	    \color{blue}
+	    The objective value at the end of the episodes is 306.4772, total Newton update is 116648. I tried using tolerance for barrier method as $1e-9$, but it was too small and the program got stuck in around $1.8e-9$ and couldn't go further over 100000 Newton updates with $t=40000$. So I changed the tolerance to $1e-8$ for barrier method. See Fig ~\ref{fig:nll_barrier}.
+	    
+	    Train error: 0.213425
+	    
+	    Test error: 0.250794
+	    
+	    Number of zeros of $\beta^\star$ (absolute value under $1e-10$):  10.
+	    
+	    \begin{figure}
+            \centering
+            \includegraphics[scale=.3]{nll_newton.png}
+            \caption{NLL Barrier method}
+            \label{fig:nll_barrier}
+        \end{figure}
+	    }
 	    
 	    \item[(iv, 4 pts)] Now, implement proximal gradient descent with backtracking for logistic regression with lasso penalty. You can refer back to the group lasso problem in homework 2 to help you in your implementation.
 
