@@ -7,4 +7,4 @@ main.tex
 main.mlx
 
 ## Q3.d
-barrier-lasso.mlx
+lasso_barrier.mlx
